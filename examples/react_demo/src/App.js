@@ -135,10 +135,8 @@ export default function App() {
       try {
         const newJson = JSON.parse(leftJsonEditorRef.current.getText());
         // const normalizedJson = normalize(newJson);
-        const normalizedJson = normalize(newJson);
-        if (normalizedJson) {
-          rightJsonEditorRef.current.set(normalizedData);
-        }
+        const normalizedJson = normalize(newJson) || {};
+        rightJsonEditorRef.current.set(normalizedJson);
       } catch (error) {}
     }
   };
