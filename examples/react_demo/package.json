@@ -8,6 +8,7 @@
     "@emotion/styled": "^11",
     "framer-motion": "^4",
     "json-api-normalizer": "^1.0.4",
+    "jsona": "^1.9.2",
     "jsoneditor": "latest",
     "react": "17.0.2",
     "react-dom": "17.0.2",

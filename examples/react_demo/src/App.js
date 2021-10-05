@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Heading, Flex, Box, Button } from "@chakra-ui/react";
-import normalize from "json-api-normalizer";
+import Jsona from "jsona";
+
+const dataFomatter = new Jsona();
 
 import JSONEditor from "jsoneditor";
 import "jsoneditor/dist/jsoneditor.css";
@@ -61,8 +63,11 @@ export default function App() {
     if (leftJsonEditorRef.current) {
       try {
         const newJson = JSON.parse(leftJsonEditorRef.current.getText());
-        const normalizedJson = normalize(newJson);
-        setJsonState(normalizedJson);
+        // const normalizedJson = normalize(newJson);
+        const normalizedJson = dataFomatter.deserialize(newJson);
+        if (normalizedJson) {
+          setJsonState(normalizedJson);
+        }
       } catch (error) {}
     }
   };

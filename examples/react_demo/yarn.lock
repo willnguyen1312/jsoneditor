@@ -7521,6 +7521,11 @@ json5@^2.1.2:
   dependencies:
     minimist "^1.2.5"
 
+jsona@^1.9.2:
+  version "1.9.2"
+  resolved "https://registry.npmjs.org/jsona/-/jsona-1.9.2.tgz#6da69c7fe5846166b98a5b6d967cdbcfd781b044"
+  integrity sha512-+af2mw8JbVUBNVFymWhovX8OV02xBKYTt8oST4HOmyfrLMfdWpatSrhvdldUTTcByzbWb4tgPbaZXaAV5yAbfg==
+
 jsoneditor@latest:
   version "9.5.6"
   resolved "https://registry.npmjs.org/jsoneditor/-/jsoneditor-9.5.6.tgz#b2abca2aeb34bb5291025d0eeddcb2845e0d90a9"
