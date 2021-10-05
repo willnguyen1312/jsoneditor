@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/react": "^1.6.8",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "framer-motion": "^4",
+    "json-api-normalizer": "^1.0.4",
     "jsoneditor": "latest",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
-    "react-scripts": "3.4.4"
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-scripts": "4.0.3"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,57 +1,84 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { Heading, Flex, Box, Button } from "@chakra-ui/react";
+import normalize from "json-api-normalizer";
 
-import JSONEditorDemo from './JSONEditorDemo';
-import './App.css';
+import JSONEditor from "jsoneditor";
+import "jsoneditor/dist/jsoneditor.css";
 
-class App extends Component {
-  state = {
-    json: {
-      'array': [1, 2, 3],
-      'boolean': true,
-      'null': null,
-      'number': 123,
-      'object': {'a': 'b', 'c': 'd'},
-      'string': 'Hello World'
+export default function App() {
+  const [jsonState, setJsonState] = useState({
+    array: [1, 2, 3],
+    boolean: true,
+    null: null,
+    number: 123,
+    object: { a: "b", c: "d" },
+    string: "Hello World",
+  });
+
+  const leftJsonEditorRef = useRef();
+  const leftJsonRef = useRef();
+
+  const rightJsonEditorRef = useRef();
+  const rightJsonRef = useRef();
+
+  useEffect(() => {
+    const options = {
+      mode: "code",
+    };
+
+    leftJsonEditorRef.current = new JSONEditor(leftJsonRef.current, options);
+    leftJsonEditorRef.current.set(jsonState);
+
+    return () => {
+      if (leftJsonEditorRef.current) {
+        leftJsonEditorRef.current.destroy();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const options = {
+      mode: "code",
+    };
+
+    rightJsonEditorRef.current = new JSONEditor(rightJsonRef.current, options);
+    rightJsonEditorRef.current.set(jsonState);
+
+    return () => {
+      if (rightJsonEditorRef.current) {
+        rightJsonEditorRef.current.destroy();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (rightJsonEditorRef.current) {
+      rightJsonEditorRef.current.update(jsonState);
+    }
+  }, [jsonState]);
+
+  const onNormalizeClick = () => {
+    if (leftJsonEditorRef.current) {
+      try {
+        const newJson = JSON.parse(leftJsonEditorRef.current.getText());
+        const normalizedJson = normalize(newJson);
+        setJsonState(normalizedJson);
+      } catch (error) {}
     }
   };
 
-  render() {
-    return (
-      <div className="app">
-        <h1>JSONEditor React demo</h1>
-        <div className="contents">
-          <div className="menu">
-            <button onClick={this.updateTime}>
-              Create/update a field "time"
-            </button>
-          </div>
-          <JSONEditorDemo
-              json={this.state.json}
-              onChangeJSON={this.onChangeJSON}
-          />
-          <div className="code">
-            <pre>
-              <code>
-                {JSON.stringify(this.state.json, null, 2)}
-              </code>
-            </pre>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  onChangeJSON = (json) => {
-    this.setState({ json });
-  };
-
-  updateTime = () => {
-    const time = new Date().toISOString();
-
-    this.setState({
-      json: Object.assign({}, this.state.json, { time })
-    })
-  };
+  return (
+    <Flex direction="column" alignItems="center" mt={8}>
+      <Heading mb={4}>JSON:API Normalization 🎉</Heading>
+      <Flex alignItems="center">
+        <Flex direction="column">
+          <Box w="500px" h="600px" ref={leftJsonRef} />
+        </Flex>
+        <Button colorScheme="pink" mx={12} onClick={onNormalizeClick}>
+          Normalize
+        </Button>
+        <Box w="500px" h="600px" ref={rightJsonRef} />
+      </Flex>
+    </Flex>
+  );
 }
-
-export default App;
