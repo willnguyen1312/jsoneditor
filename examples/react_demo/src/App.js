@@ -1,22 +1,99 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Heading, Flex, Box, Button } from "@chakra-ui/react";
-import Jsona from "jsona";
+import normalize from "json-api-normalizer";
+// import Jsona from "jsona";
 
-const dataFomatter = new Jsona();
+// const dataFomatter = new Jsona();
 
 import JSONEditor from "jsoneditor";
 import "jsoneditor/dist/jsoneditor.css";
 
-export default function App() {
-  const [jsonState, setJsonState] = useState({
-    array: [1, 2, 3],
-    boolean: true,
-    null: null,
-    number: 123,
-    object: { a: "b", c: "d" },
-    string: "Hello World",
-  });
+const initialData = {
+  links: {
+    self: "http://example.com/articles",
+    next: "http://example.com/articles?page[offset]=2",
+    last: "http://example.com/articles?page[offset]=10",
+  },
+  data: [
+    {
+      type: "articles",
+      id: "1",
+      attributes: {
+        title: "JSON:API paints my bikeshed!",
+      },
+      relationships: {
+        author: {
+          links: {
+            self: "http://example.com/articles/1/relationships/author",
+            related: "http://example.com/articles/1/author",
+          },
+          data: { type: "people", id: "9" },
+        },
+        comments: {
+          links: {
+            self: "http://example.com/articles/1/relationships/comments",
+            related: "http://example.com/articles/1/comments",
+          },
+          data: [
+            { type: "comments", id: "5" },
+            { type: "comments", id: "12" },
+          ],
+        },
+      },
+      links: {
+        self: "http://example.com/articles/1",
+      },
+    },
+  ],
+  included: [
+    {
+      type: "people",
+      id: "9",
+      attributes: {
+        firstName: "Dan",
+        lastName: "Gebhardt",
+        twitter: "dgeb",
+      },
+      links: {
+        self: "http://example.com/people/9",
+      },
+    },
+    {
+      type: "comments",
+      id: "5",
+      attributes: {
+        body: "First!",
+      },
+      relationships: {
+        author: {
+          data: { type: "people", id: "2" },
+        },
+      },
+      links: {
+        self: "http://example.com/comments/5",
+      },
+    },
+    {
+      type: "comments",
+      id: "12",
+      attributes: {
+        body: "I like XML better",
+      },
+      relationships: {
+        author: {
+          data: { type: "people", id: "9" },
+        },
+      },
+      links: {
+        self: "http://example.com/comments/12",
+      },
+    },
+  ],
+};
 
+const normalizedData = normalize(initialData);
+
+export default function App() {
   const leftJsonEditorRef = useRef();
   const leftJsonRef = useRef();
 
@@ -29,7 +106,7 @@ export default function App() {
     };
 
     leftJsonEditorRef.current = new JSONEditor(leftJsonRef.current, options);
-    leftJsonEditorRef.current.set(jsonState);
+    leftJsonEditorRef.current.set(initialData);
 
     return () => {
       if (leftJsonEditorRef.current) {
@@ -44,7 +121,7 @@ export default function App() {
     };
 
     rightJsonEditorRef.current = new JSONEditor(rightJsonRef.current, options);
-    rightJsonEditorRef.current.set(jsonState);
+    rightJsonEditorRef.current.set(normalizedData);
 
     return () => {
       if (rightJsonEditorRef.current) {
@@ -53,20 +130,14 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (rightJsonEditorRef.current) {
-      rightJsonEditorRef.current.update(jsonState);
-    }
-  }, [jsonState]);
-
   const onNormalizeClick = () => {
     if (leftJsonEditorRef.current) {
       try {
         const newJson = JSON.parse(leftJsonEditorRef.current.getText());
         // const normalizedJson = normalize(newJson);
-        const normalizedJson = dataFomatter.deserialize(newJson);
+        const normalizedJson = normalize(newJson);
         if (normalizedJson) {
-          setJsonState(normalizedJson);
+          rightJsonEditorRef.current.set(normalizedData);
         }
       } catch (error) {}
     }
