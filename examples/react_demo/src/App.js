@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Heading, Flex, Box, Button } from "@chakra-ui/react";
 import normalize from "json-api-normalizer";
-// import Jsona from "jsona";
+import Jsona from "jsona";
 
-// const dataFomatter = new Jsona();
+const dataFomatter = new Jsona();
 
 import JSONEditor from "jsoneditor";
 import "jsoneditor/dist/jsoneditor.css";
@@ -91,7 +91,14 @@ const initialData = {
   ],
 };
 
-const normalizedData = normalize(initialData);
+const modernize = (data) => {
+  return {
+    data: dataFomatter.deserialize(data),
+    resources: normalize(initialData),
+  };
+};
+
+const normalizedData = modernize(initialData);
 
 export default function App() {
   const leftJsonEditorRef = useRef();
@@ -134,8 +141,7 @@ export default function App() {
     if (leftJsonEditorRef.current) {
       try {
         const newJson = JSON.parse(leftJsonEditorRef.current.getText());
-        // const normalizedJson = normalize(newJson);
-        const normalizedJson = normalize(newJson) || {};
+        const normalizedJson = modernize(newJson) || {};
         rightJsonEditorRef.current.set(normalizedJson);
       } catch (error) {}
     }
